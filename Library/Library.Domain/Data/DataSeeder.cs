@@ -2,8 +2,14 @@
 
 namespace Library.Domain.Data;
 
+/// <summary>
+/// Класс, содержащий заранее подготовленные тестовые данные для доменной модели библиотеки
+/// </summary>
 public class DataSeeder
 {
+    /// <summary>
+    /// Список видов изданий
+    /// </summary>
     public List<EditionType> EditionTypes { get; } =
     [
         new EditionType { Id = 1, Name = "Роман" },
@@ -18,6 +24,9 @@ public class DataSeeder
         new EditionType { Id = 10, Name = "Документальная литература" },
     ];
 
+    /// <summary>
+    /// Список издательств
+    /// </summary>
     public List<Publisher> Publishers { get; } =
     [
         new Publisher { Id = 1, Name = "АСТ" },
@@ -32,6 +41,9 @@ public class DataSeeder
         new Publisher { Id = 10, Name = "Книжный Мир" },
     ];
 
+    /// <summary>
+    /// Список книг с заполненными ссылками на издательства и виды изданий
+    /// </summary>
     public List<Book> Books { get; } =
     [
         new Book { Id = 1, InventoryNumber = "INV-001", AlphabetCode = "А-001", Authors = "А. Пушкин", Title = "Капитанская дочка", EditionTypeId = 2, PublisherId = 1, Year = 1836 },
@@ -46,6 +58,9 @@ public class DataSeeder
         new Book { Id = 10, InventoryNumber = "INV-010", AlphabetCode = "Г-008", Authors = "Д. Карнеги", Title = "Как завоевывать друзей", EditionTypeId = 10, PublisherId = 4, Year = 1936 },
     ];
 
+    /// <summary>
+    /// Список читателей библиотеки, включающий персональные данные и дату регистрации
+    /// </summary>
     public List<Reader> Readers { get; } =
     [
         new Reader { Id = 1, FullName = "Иванов Иван Иванович", Address = "ул. Ленина, 10", Phone = "89001001010", RegistrationDate = DateTime.UtcNow.AddYears(-2) },
@@ -60,6 +75,9 @@ public class DataSeeder
         new Reader { Id = 10, FullName = "Соколова Ксения Дмитриевна", Address = "ул. Парковая, 5", Phone = "89001112233", RegistrationDate = DateTime.UtcNow.AddMonths(-1) },
     ];
 
+    /// <summary>
+    /// Список фактов выдачи книг
+    /// </summary>
     public List<BookIssue> BookIssues { get; } =
     [
             new BookIssue { Id = 1,  BookId = 2, ReaderId = 1, IssueDate = DateTime.UtcNow.AddDays(-10), Days = 14, ReturnDate = null },
