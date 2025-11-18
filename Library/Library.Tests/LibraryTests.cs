@@ -74,9 +74,12 @@ public class LibraryTests(DataSeeder dataSeeder) : IClassFixture<DataSeeder>
             .Select(r => r.Id)
             .ToList();
 
-        Assert.Equal(60, maxDays);
-        var expectedReaderIds = new List<int> { 1 };
-        Assert.Equal(expectedReaderIds, readersWithMaxDays);
+        var expectedId = 1;
+        var expectedDays = 60;
+
+        Assert.Single(readersWithMaxDays);
+        Assert.Equal(expectedDays, maxDays);
+        Assert.Equal(expectedId, readersWithMaxDays[0]);
     }
 
     /// <summary>
