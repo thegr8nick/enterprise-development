@@ -34,8 +34,8 @@ public class LibraryTests(DataSeeder dataSeeder) : IClassFixture<DataSeeder>
     [Fact]
     public void Top5Readers_ByIssuesCountInPeriod_ReturnsExpectedTop5()
     {
-        var periodStart = DateTime.UtcNow.AddYears(-1);
-        var periodEnd = DateTime.UtcNow;
+        var periodStart = DataSeeder.SeedNowUtc.AddYears(-1);
+        var periodEnd = DataSeeder.SeedNowUtc;
 
         var topReaders = dataSeeder.BookIssues
             .Where(bi => bi.IssueDate >= periodStart && bi.IssueDate <= periodEnd)
@@ -88,8 +88,8 @@ public class LibraryTests(DataSeeder dataSeeder) : IClassFixture<DataSeeder>
     [Fact]
     public void Top5Publishers_ByIssuesCountLastYear_ReturnsExpectedTop5()
     {
-        var lastYearStart = DateTime.UtcNow.AddYears(-1);
-        var lastYearEnd = DateTime.UtcNow;
+        var lastYearStart = DataSeeder.SeedNowUtc.AddYears(-1);
+        var lastYearEnd = DataSeeder.SeedNowUtc;
 
         var topPublishers = dataSeeder.BookIssues
             .Where(bi => bi.IssueDate >= lastYearStart && bi.IssueDate <= lastYearEnd)
@@ -118,8 +118,8 @@ public class LibraryTests(DataSeeder dataSeeder) : IClassFixture<DataSeeder>
     [Fact]
     public void Bottom5Books_ByIssuesCountLastYear_ReturnsExpectedBottom5()
     {
-        var lastYearStart = DateTime.UtcNow.AddYears(-1);
-        var lastYearEnd = DateTime.UtcNow;
+        var lastYearStart = DataSeeder.SeedNowUtc.AddYears(-1);
+        var lastYearEnd = DataSeeder.SeedNowUtc;
 
         var bookCounts = dataSeeder.Books
             .GroupJoin(
