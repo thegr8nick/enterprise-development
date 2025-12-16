@@ -49,7 +49,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options, DataSe
 
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .IsRequired();
 
             entity.Property(x => x.Name)
@@ -68,7 +68,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options, DataSe
 
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .IsRequired();
 
             entity.Property(x => x.Name)
@@ -87,7 +87,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options, DataSe
 
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .IsRequired();
 
             entity.Property(x => x.InventoryNumber)
@@ -146,7 +146,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options, DataSe
 
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .IsRequired();
 
             entity.Property(x => x.FullName)
@@ -183,7 +183,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options, DataSe
 
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .IsRequired();
 
             entity.Property(x => x.BookId)

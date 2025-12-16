@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Library.Application.Contracts;
+using Library.Application.Contracts.BookIssues;
 using Library.Application.Contracts.Books;
+using Library.Application.Contracts.EditionTypes;
+using Library.Application.Contracts.Publishers;
 using Library.Domain;
 using Library.Domain.Models;
 
@@ -11,9 +14,10 @@ namespace Library.Application.Services;
 /// </summary>
 public class BookService(
     IRepository<Book, int> bookRepository,
+    IRepository<BookIssue, int> bookIssueRepository,
     IRepository<Publisher, int> publisherRepository,
     IRepository<EditionType, int> editionTypeRepository,
-    IMapper mapper) : IApplicationService<BookDto, BookCreateUpdateDto, int>
+    IMapper mapper) : IBookService
 {
     /// <summary>
     /// Создаёт книгу
@@ -86,4 +90,55 @@ public class BookService(
     /// <param name="dtoId">Идентификатор книги</param>
     /// <returns>true если удаление выполнено иначе false</returns>
     public Task<bool> Delete(int dtoId) => bookRepository.Delete(dtoId);
+
+    /// <summary>
+    /// Возвращает записи о выдачах книги
+    /// </summary>
+    /// <param name="bookId">Идентификатор книги</param>
+    /// <returns>Список DTO для получения выдач книг</returns>
+    public async Task<IList<BookIssueDto>> GetIssues(int bookId)
+    {
+        _ = await bookRepository.Read(bookId)
+            ?? throw new KeyNotFoundException($"Книга с идентификатором {bookId} не найдена");
+
+        var issues = await bookIssueRepository.ReadAll();
+
+        var bookIssues = issues
+            .Where(x => x.BookId == bookId)
+            .ToList();
+
+        return [.. bookIssues.Select(mapper.Map<BookIssueDto>)];
+    }
+
+    /// <summary>
+    /// Возвращает вид издания книги
+    /// </summary>
+    /// <param name="bookId">Идентификатор книги</param>
+    /// <returns>DTO для получения вида издания</returns>
+    public async Task<EditionTypeDto> GetEditionType(int bookId)
+    {
+        var book = await bookRepository.Read(bookId)
+            ?? throw new KeyNotFoundException($"Книга с идентификатором {bookId} не найдена");
+
+        var editionType = await editionTypeRepository.Read(book.EditionTypeId)
+            ?? throw new KeyNotFoundException($"Вид издания с идентификатором {book.EditionTypeId} не найден");
+
+        return mapper.Map<EditionTypeDto>(editionType);
+    }
+
+    /// <summary>
+    /// Возвращает издательство книги
+    /// </summary>
+    /// <param name="bookId">Идентификатор книги</param>
+    /// <returns>DTO для получения издательства</returns>
+    public async Task<PublisherDto> GetPublisher(int bookId)
+    {
+        var book = await bookRepository.Read(bookId)
+            ?? throw new KeyNotFoundException($"Книга с идентификатором {bookId} не найдена");
+
+        var publisher = await publisherRepository.Read(book.PublisherId)
+            ?? throw new KeyNotFoundException($"Издательство с идентификатором {book.PublisherId} не найдено");
+
+        return mapper.Map<PublisherDto>(publisher);
+    }
 }
