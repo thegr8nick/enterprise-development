@@ -37,6 +37,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
         }
         catch (KeyNotFoundException ex)
         {
+            logger.LogWarning("A not found exception happened during {method} method of {controller}: {@exception}", nameof(Create), GetType().Name, ex);
             return NotFound(ex.Message);
         }
         catch (Exception ex)
@@ -67,6 +68,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
         }
         catch (KeyNotFoundException ex)
         {
+            logger.LogWarning("A not found exception happened during {method} method of {controller}: {@exception}", nameof(Edit), GetType().Name, ex);
             return NotFound(ex.Message);
         }
         catch (Exception ex)
@@ -144,6 +146,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
         }
         catch (KeyNotFoundException ex)
         {
+            logger.LogWarning("A not found exception happened during {method} method of {controller}: {@exception}", nameof(Get), GetType().Name, ex);
             return NotFound(ex.Message);
         }
         catch (Exception ex)

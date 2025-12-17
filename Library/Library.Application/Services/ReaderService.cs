@@ -35,7 +35,7 @@ public class ReaderService(
     public async Task<ReaderDto?> Get(int dtoId)
     {
         var entity = await readerRepository.Read(dtoId)
-            ?? throw new KeyNotFoundException($"Читатель с идентификатором {dtoId} не найден");
+            ?? throw new KeyNotFoundException($"Reader with id {dtoId} not found");
 
         return mapper.Map<ReaderDto>(entity);
     }
@@ -59,7 +59,7 @@ public class ReaderService(
     public async Task<ReaderDto> Update(ReaderCreateUpdateDto dto, int dtoId)
     {
         var entity = await readerRepository.Read(dtoId)
-            ?? throw new KeyNotFoundException($"Читатель с идентификатором {dtoId} не найден");
+            ?? throw new KeyNotFoundException($"Reader with id {dtoId} not found");
 
         mapper.Map(dto, entity);
 
@@ -82,7 +82,7 @@ public class ReaderService(
     public async Task<IList<BookIssueDto>> GetIssues(int readerId)
     {
         _ = await readerRepository.Read(readerId)
-            ?? throw new KeyNotFoundException($"Читатель с идентификатором {readerId} не найден");
+            ?? throw new KeyNotFoundException($"Reader with id {readerId} not found");
 
         var issues = await bookIssueRepository.ReadAll();
 

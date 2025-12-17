@@ -36,6 +36,7 @@ public class BookController(
         }
         catch (KeyNotFoundException ex)
         {
+            logger.LogWarning("A not found exception happened during {method} method of {controller}: {@exception}", nameof(GetIssues), GetType().Name, ex);
             return NotFound(ex.Message);
         }
         catch (Exception ex)
@@ -65,6 +66,7 @@ public class BookController(
         }
         catch (KeyNotFoundException ex)
         {
+            logger.LogWarning("A not found exception happened during {method} method of {controller}: {@exception}", nameof(GetEditionType), GetType().Name, ex);
             return NotFound(ex.Message);
         }
         catch (Exception ex)
@@ -94,6 +96,7 @@ public class BookController(
         }
         catch (KeyNotFoundException ex)
         {
+            logger.LogWarning("A not found exception happened during {method} method of {controller}: {@exception}", nameof(GetPublisher), GetType().Name, ex);
             return NotFound(ex.Message);
         }
         catch (Exception ex)

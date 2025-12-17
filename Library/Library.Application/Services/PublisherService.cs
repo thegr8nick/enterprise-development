@@ -34,7 +34,7 @@ public class PublisherService(
     public async Task<PublisherDto?> Get(int dtoId)
     {
         var entity = await publisherRepository.Read(dtoId)
-            ?? throw new KeyNotFoundException($"Издательство с идентификатором {dtoId} не найдено");
+            ?? throw new KeyNotFoundException($"Publisher with id {dtoId} not found");
 
         return mapper.Map<PublisherDto>(entity);
     }
@@ -58,7 +58,7 @@ public class PublisherService(
     public async Task<PublisherDto> Update(PublisherCreateUpdateDto dto, int dtoId)
     {
         var entity = await publisherRepository.Read(dtoId)
-            ?? throw new KeyNotFoundException($"Издательство с идентификатором {dtoId} не найдено");
+            ?? throw new KeyNotFoundException($"Publisher with id {dtoId} not found");
 
         mapper.Map(dto, entity);
 

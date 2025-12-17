@@ -34,7 +34,7 @@ public class EditionTypeService(
     public async Task<EditionTypeDto?> Get(int dtoId)
     {
         var entity = await editionTypeRepository.Read(dtoId)
-            ?? throw new KeyNotFoundException($"Вид издания с идентификатором {dtoId} не найден");
+            ?? throw new KeyNotFoundException($"Edition Type with id {dtoId} not found");
 
         return mapper.Map<EditionTypeDto>(entity);
     }
@@ -58,7 +58,7 @@ public class EditionTypeService(
     public async Task<EditionTypeDto> Update(EditionTypeCreateUpdateDto dto, int dtoId)
     {
         var entity = await editionTypeRepository.Read(dtoId)
-            ?? throw new KeyNotFoundException($"Вид издания с идентификатором {dtoId} не найден");
+            ?? throw new KeyNotFoundException($"Edition Type with id {dtoId} not found");
 
         mapper.Map(dto, entity);
 

@@ -1,4 +1,7 @@
 ﻿using Library.Application.Contracts;
+using Library.Application.Contracts.Analytics;
+using Library.Application.Contracts.Books;
+using Library.Application.Contracts.Readers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Api.Host.Controllers;
@@ -19,7 +22,7 @@ public class AnalyticsController(
     [HttpGet("issued-books")]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetIssuedBooksOrderedByTitle()
+    public async Task<ActionResult<IList<BookDto>>> GetIssuedBooksOrderedByTitle()
     {
         logger.LogInformation("{method} method of {controller} is called", nameof(GetIssuedBooksOrderedByTitle), GetType().Name);
         try
@@ -45,14 +48,14 @@ public class AnalyticsController(
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetTop5ReadersByIssuesCount([FromQuery] DateTime periodStart, [FromQuery] DateTime periodEnd)
+    public async Task<ActionResult<IList<ReaderIssuesStatDto>>> GetTop5ReadersByIssuesCount([FromQuery] DateTime periodStart, [FromQuery] DateTime periodEnd)
     {
         logger.LogInformation(
             "{method} method of {controller} is called with {start},{end} parameters",
             nameof(GetTop5ReadersByIssuesCount), GetType().Name, periodStart, periodEnd);
 
         if (periodEnd < periodStart)
-            return BadRequest("periodEnd не может быть меньше periodStart");
+            return BadRequest("periodEnd cannot be less than PeriodStart");
 
         try
         {
@@ -74,7 +77,7 @@ public class AnalyticsController(
     [HttpGet("readers-max-loan-days")]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetReadersByMaxLoanDaysOrderedByFullName()
+    public async Task<ActionResult<IList<ReaderDto>>> GetReadersByMaxLoanDaysOrderedByFullName()
     {
         logger.LogInformation("{method} method of {controller} is called", nameof(GetReadersByMaxLoanDaysOrderedByFullName), GetType().Name);
         try
@@ -97,7 +100,7 @@ public class AnalyticsController(
     [HttpGet("top-publishers-last-year")]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetTop5PublishersByIssuesCountLastYear()
+    public async Task<ActionResult<IList<PublisherIssuesStatDto>>> GetTop5PublishersByIssuesCountLastYear()
     {
         logger.LogInformation("{method} method of {controller} is called", nameof(GetTop5PublishersByIssuesCountLastYear), GetType().Name);
         try
@@ -120,7 +123,7 @@ public class AnalyticsController(
     [HttpGet("bottom-books-last-year")]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetBottom5BooksByIssuesCountLastYear()
+    public async Task<ActionResult<IList<BookIssuesStatDto>>> GetBottom5BooksByIssuesCountLastYear()
     {
         logger.LogInformation("{method} method of {controller} is called", nameof(GetBottom5BooksByIssuesCountLastYear), GetType().Name);
         try
