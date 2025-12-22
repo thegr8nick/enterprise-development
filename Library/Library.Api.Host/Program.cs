@@ -1,3 +1,5 @@
+using Library.Api.Host.Consumers;
+using Library.Api.Host.Options;
 using Library.Application;
 using Library.Application.Contracts;
 using Library.Application.Contracts.BookIssues;
@@ -57,6 +59,17 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.AddSqlServerDbContext<LibraryDbContext>("Connection");
+
+builder.AddRabbitMQClient("rabbitmq", configureConnectionFactory: factory =>
+{
+    factory.AutomaticRecoveryEnabled = true;
+    factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(5);
+});
+
+builder.Services.Configure<ConsumerOptions>(
+    builder.Configuration.GetSection(ConsumerOptions.SectionName));
+
+builder.Services.AddHostedService<BookIssueConsumer>();
 
 var app = builder.Build();
 
