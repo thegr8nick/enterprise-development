@@ -15,6 +15,8 @@ builder.Services.Configure<GeneratorOptions>(
     builder.Configuration.GetSection(GeneratorOptions.SectionName));
 
 builder.Services.AddSingleton<BookIssueGenerator>();
+builder.Services.AddSingleton<RabbitMqPublisher>();
+builder.Services.AddHostedService<BookIssueGeneratorService>();
 
 var host = builder.Build();
 host.Run();

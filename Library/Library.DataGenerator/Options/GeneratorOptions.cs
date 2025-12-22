@@ -13,7 +13,7 @@ public class GeneratorOptions
     /// <summary>
     /// Интервал между генерациями сообщений (в миллисекундах)
     /// </summary>
-    public int IntervalMs { get; init; } = 5000;
+    public int IntervalMs { get; init; } = 2000;
 
     /// <summary>
     /// Максимальный Id книги для генерации (от 1 до MaxBookId)
