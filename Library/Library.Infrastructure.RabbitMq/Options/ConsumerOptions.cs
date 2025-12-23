@@ -1,4 +1,4 @@
-namespace Library.Api.Host.Options;
+namespace Library.Infrastructure.RabbitMq.Options;
 
 /// <summary>
 /// Настройки Consumer для RabbitMQ

@@ -1,5 +1,3 @@
-using Library.Api.Host.Consumers;
-using Library.Api.Host.Options;
 using Library.Application;
 using Library.Application.Contracts;
 using Library.Application.Contracts.BookIssues;
@@ -13,6 +11,8 @@ using Library.Domain.Data;
 using Library.Domain.Models;
 using Library.Infrastructure.EfCore;
 using Library.Infrastructure.EfCore.Repositories;
+using Library.Infrastructure.RabbitMq;
+using Library.Infrastructure.RabbitMq.Options;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

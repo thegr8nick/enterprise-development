@@ -1,14 +1,16 @@
-using Library.Api.Host.Options;
 using Library.Application.Contracts;
 using Library.Application.Contracts.BookIssues;
+using Library.Infrastructure.RabbitMq.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitMQ.Client.Exceptions;
 using System.Text;
 using System.Text.Json;
 
-namespace Library.Api.Host.Consumers;
+namespace Library.Infrastructure.RabbitMq;
 
 /// <summary>
 /// Фоновый сервис для получения и обработки BookIssue сообщений из RabbitMQ
@@ -42,12 +44,24 @@ public class BookIssueConsumer(
 
         await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
 
+        var consumerCancelled = new TaskCompletionSource<bool>();
+
         var consumer = new AsyncEventingBasicConsumer(channel);
+
+        consumer.UnregisteredAsync += (_, _) =>
+        {
+            logger.LogInformation("Consumer is stopping Queue: {QueueName}", _options.QueueName);
+            consumerCancelled.TrySetResult(true);
+            return Task.CompletedTask;
+        };
 
         consumer.ReceivedAsync += async (_, ea) =>
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
+
+            var shouldAck = true;
+            var shouldRequeue = false;
 
             try
             {
@@ -63,42 +77,38 @@ public class BookIssueConsumer(
 
                 var result = await service.Create(dto);
 
-                logger.LogInformation("BookIssue successfully created: Id={Id}, BookId={BookId}, ReaderId={ReaderId}", result.Id, result.BookId, result.ReaderId);
-
-                await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
+                logger.LogInformation("BookIssue successfully created: Id={Id}, BookId={BookId}, ReaderId={ReaderId}",
+                    result.Id, result.BookId, result.ReaderId);
             }
             catch (KeyNotFoundException ex)
             {
-                logger.LogWarning("Validation failed: {Message}", ex.Message);
-
-                try
-                {
-                    await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
-                }
-                catch (AlreadyClosedException) { }
-                catch (OperationCanceledException) { }
+                logger.LogWarning(ex, "Validation failed: {Message}", ex.Message);
             }
             catch (JsonException ex)
             {
-                logger.LogError(ex, "Message deserialization error");
-
-                try
-                {
-                    await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
-                }
-                catch (AlreadyClosedException) { }
-                catch (OperationCanceledException) { }
+                logger.LogError(ex, "Message deserialization error: {Message}", ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                logger.LogError(ex, "Invalid message data: {Message}", ex.Message);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error processing the message");
+                logger.LogError(ex, "Error processing the message: {Message}", ex.Message);
+                shouldAck = false;
+                shouldRequeue = true;
+            }
 
-                try
-                {
-                    await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
-                }
-                catch (AlreadyClosedException) { }
-                catch (OperationCanceledException) { }
+            try
+            {
+                if (shouldAck)
+                    await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
+                else
+                    await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: shouldRequeue, cancellationToken: stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to acknowledge message: {ExceptionType}", ex.GetType().Name);
             }
         };
 
@@ -108,13 +118,7 @@ public class BookIssueConsumer(
             consumer: consumer,
             cancellationToken: stoppingToken);
 
-        try
-        {
-            await Task.Delay(Timeout.Infinite, stoppingToken);
-        }
-        catch (OperationCanceledException)
-        {
-            logger.LogInformation("Consumer is stopping Queue: {QueueName}", _options.QueueName);
-        }
+        await using var registration = stoppingToken.Register(() => consumerCancelled.TrySetCanceled());
+        await consumerCancelled.Task;
     }
 }
